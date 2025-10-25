@@ -8,7 +8,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/maksat/aqylly"
+	"github.com/Makennsky/aqylly"
 )
 
 func main() {

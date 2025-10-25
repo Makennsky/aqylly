@@ -6,7 +6,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/maksat/aqylly"
+	"github.com/Makennsky/aqylly"
 )
 
 func main() {

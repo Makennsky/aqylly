@@ -1,7 +1,7 @@
 module example
 
-go 1.24
+go 1.24.0
 
-require github.com/maksat/aqylly v0.0.0
+require github.com/Makennsky/aqylly v0.0.0
 
-replace github.com/maksat/aqylly => ../
+replace github.com/Makennsky/aqylly => ../

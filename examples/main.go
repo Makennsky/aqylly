@@ -4,7 +4,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/maksat/aqylly"
+	"github.com/Makennsky/aqylly"
 )
 
 func main() {
