@@ -1,27 +1,27 @@
 # Aqylly
 
-Быстрый и production-ready HTTP роутер на чистом Go без сторонних зависимостей (кроме `golang.org/x/net` для HTTP/2).
+Fast and production-ready HTTP router in pure Go with minimal dependencies (only `golang.org/x/net` for HTTP/2).
 
-## Особенности
+## Features
 
-- ✅ **Минимум зависимостей**: только стандартная библиотека Go + `golang.org/x/net/http2`
-- ✅ **Быстрый**: использует Radix Tree для эффективного роутинга
-- ✅ **URL параметры**: поддержка динамических параметров `:id` и wildcard `*path`
-- ✅ **Middleware**: гибкая система middleware на глобальном и групповом уровне
-- ✅ **Группировка маршрутов**: вложенные группы с общими префиксами и middleware
-- ✅ **Query параметры**: удобная работа с query параметрами с type-safe API
-- ✅ **HTTP/2**: полная поддержка HTTP/2 с Server Push и h2c (cleartext)
-- ✅ **Context API**: стандартный `context.Context` для таймаутов, отмены и передачи данных
-- ✅ **Graceful Shutdown**: корректное завершение с использованием context
+- ✅ **Minimal Dependencies**: Only Go standard library + `golang.org/x/net/http2`
+- ✅ **Fast**: Uses Radix Tree for efficient routing
+- ✅ **URL Parameters**: Support for dynamic parameters `:id` and wildcard `*path`
+- ✅ **Middleware**: Flexible middleware system at global and group levels
+- ✅ **Route Grouping**: Nested groups with shared prefixes and middleware
+- ✅ **Query Parameters**: Convenient query parameter handling with type-safe API
+- ✅ **HTTP/2**: Full HTTP/2 support with Server Push and h2c (cleartext)
+- ✅ **Context API**: Standard `context.Context` for timeouts, cancellation, and value passing
+- ✅ **Graceful Shutdown**: Proper shutdown using context
 - ✅ **Production Ready**: HPACK compression, multiplexing, flow control
 
-## Установка
+## Installation
 
 ```bash
 go get github.com/maksat/aqylly
 ```
 
-## Быстрый старт
+## Quick Start
 
 ```go
 package main
@@ -32,51 +32,51 @@ import (
 )
 
 func main() {
-    // Создаем роутер с дефолтными middleware (Logger и Recovery)
+    // Create router with default middleware (Logger and Recovery)
     router := aqylly.Default()
 
-    // Простой GET маршрут
+    // Simple GET route
     router.GET("/", func(c *aqylly.Context) {
         c.JSON(200, map[string]string{
             "message": "Hello, World!",
         })
     })
 
-    // Запускаем сервер
+    // Start server
     log.Fatal(router.Run(":8080"))
 }
 ```
 
-## Примеры использования
+## Usage Examples
 
-### Базовые маршруты
+### Basic Routes
 
 ```go
 router := aqylly.New()
 
-// HTTP методы
+// HTTP methods
 router.GET("/users", getUsers)
 router.POST("/users", createUser)
 router.PUT("/users/:id", updateUser)
 router.DELETE("/users/:id", deleteUser)
 router.PATCH("/users/:id", patchUser)
 
-// Поддержка всех методов
+// Support for all methods
 router.Any("/ping", func(c *aqylly.Context) {
     c.String(200, "pong")
 })
 ```
 
-### URL параметры
+### URL Parameters
 
 ```go
-// Параметр :id
+// Parameter :id
 router.GET("/users/:id", func(c *aqylly.Context) {
     userID := c.Param("id")
     c.JSON(200, map[string]string{"user_id": userID})
 })
 
-// Несколько параметров
+// Multiple parameters
 router.GET("/users/:id/posts/:postId", func(c *aqylly.Context) {
     userID := c.Param("id")
     postID := c.Param("postId")
@@ -86,25 +86,25 @@ router.GET("/users/:id/posts/:postId", func(c *aqylly.Context) {
     })
 })
 
-// Catch-all параметр
+// Catch-all parameter
 router.GET("/files/*filepath", func(c *aqylly.Context) {
     filepath := c.Param("filepath")
     c.String(200, "Filepath: %s", filepath)
 })
 ```
 
-### Query параметры
+### Query Parameters
 
 ```go
 router.GET("/search", func(c *aqylly.Context) {
-    // Получить query параметр
+    // Get query parameter
     query := c.Query("q")
 
-    // С дефолтным значением
+    // With default value
     page := c.QueryIntDefault("page", 1)
     limit := c.QueryIntDefault("limit", 10)
 
-    // Массив значений
+    // Array values
     tags := c.QueryArray("tags")
 
     c.JSON(200, map[string]interface{}{
@@ -116,7 +116,7 @@ router.GET("/search", func(c *aqylly.Context) {
 })
 ```
 
-### JSON и другие форматы
+### JSON and Other Formats
 
 ```go
 // JSON response
@@ -157,17 +157,17 @@ router.GET("/data", func(c *aqylly.Context) {
 })
 ```
 
-### Группировка маршрутов
+### Route Grouping
 
 ```go
 router := aqylly.Default()
 
-// Создать группу
+// Create a group
 api := router.Group("/api")
 {
     api.GET("/status", statusHandler)
 
-    // Вложенная группа
+    // Nested group
     v1 := api.Group("/v1")
     {
         v1.GET("/users", getUsersV1)
@@ -185,14 +185,14 @@ api := router.Group("/api")
 ### Middleware
 
 ```go
-// Глобальные middleware
+// Global middleware
 router := aqylly.New()
 router.Use(aqylly.Logger())
 router.Use(aqylly.Recovery())
 router.Use(aqylly.RequestID())
 router.Use(aqylly.Secure())
 
-// Middleware для группы
+// Group-level middleware
 admin := router.Group("/admin", aqylly.BasicAuth("admin", "secret"))
 {
     admin.GET("/dashboard", dashboardHandler)
@@ -211,22 +211,22 @@ corsGroup := router.Group("/api",
 limited := router.Group("/api", aqylly.RateLimiter(100)) // 100 req/sec
 ```
 
-### Встроенные Middleware
+### Built-in Middleware
 
 #### Logger
-Логирует HTTP запросы:
+Logs HTTP requests:
 ```go
 router.Use(aqylly.Logger())
 ```
 
 #### Recovery
-Перехватывает panic и возвращает 500:
+Catches panics and returns 500:
 ```go
 router.Use(aqylly.Recovery())
 ```
 
 #### CORS
-Настраивает CORS headers:
+Configures CORS headers:
 ```go
 router.Use(aqylly.CORS(
     []string{"https://example.com"},
@@ -236,55 +236,55 @@ router.Use(aqylly.CORS(
 ```
 
 #### BasicAuth
-Базовая HTTP аутентификация:
+Basic HTTP authentication:
 ```go
 router.Use(aqylly.BasicAuth("username", "password"))
 ```
 
 #### RateLimiter
-Ограничение количества запросов:
+Request rate limiting:
 ```go
-router.Use(aqylly.RateLimiter(100)) // 100 запросов в секунду
+router.Use(aqylly.RateLimiter(100)) // 100 requests per second
 ```
 
 #### RequestID
-Добавляет уникальный ID к каждому запросу:
+Adds unique ID to each request:
 ```go
 router.Use(aqylly.RequestID())
 ```
 
 #### Secure
-Добавляет security headers:
+Adds security headers:
 ```go
 router.Use(aqylly.Secure())
 ```
 
 #### Timeout
-Устанавливает timeout для запросов:
+Sets timeout for requests:
 ```go
 router.Use(aqylly.Timeout(5 * time.Second))
 ```
 
-### Кастомные Middleware
+### Custom Middleware
 
 ```go
-// Простой middleware
+// Simple middleware
 func MyMiddleware() aqylly.HandlerFunc {
     return func(c *aqylly.Context) {
-        // До обработки запроса
+        // Before request processing
         log.Println("Before request")
 
-        // Обработать запрос
+        // Process request
         c.Next()
 
-        // После обработки запроса
+        // After request processing
         log.Println("After request")
     }
 }
 
 router.Use(MyMiddleware())
 
-// Middleware с abort
+// Middleware with abort
 func AuthMiddleware() aqylly.HandlerFunc {
     return func(c *aqylly.Context) {
         token := c.Header("Authorization")
@@ -305,11 +305,11 @@ func AuthMiddleware() aqylly.HandlerFunc {
 
 ```go
 router.GET("/demo", func(c *aqylly.Context) {
-    // Request информация
-    method := c.Method()           // HTTP метод
-    path := c.Path()              // Путь запроса
-    fullPath := c.FullPath()      // Полный URL
-    clientIP := c.ClientIP()      // IP клиента
+    // Request information
+    method := c.Method()           // HTTP method
+    path := c.Path()              // Request path
+    fullPath := c.FullPath()      // Full URL
+    clientIP := c.ClientIP()      // Client IP
 
     // Headers
     contentType := c.ContentType()
@@ -343,23 +343,23 @@ router.GET("/demo", func(c *aqylly.Context) {
 })
 ```
 
-### HTTP/2 поддержка
+### HTTP/2 Support
 
-HTTP/2 включен по умолчанию при использовании TLS. Роутер автоматически настраивает ALPN negotiation.
+HTTP/2 is enabled by default when using TLS. The router automatically configures ALPN negotiation.
 
-#### HTTP/2 с TLS
+#### HTTP/2 with TLS
 
 ```go
 router := aqylly.Default()
 
-// Настройка HTTP/2 параметров
+// Configure HTTP/2 parameters
 router.HTTP2Config = &aqylly.HTTP2Config{
     MaxConcurrentStreams: 250,
     MaxReadFrameSize:     16384,
     IdleTimeout:          120,
 }
 
-// Запуск с TLS и HTTP/2
+// Run with TLS and HTTP/2
 router.RunTLS(":443", "cert.pem", "key.pem")
 ```
 
@@ -367,7 +367,7 @@ router.RunTLS(":443", "cert.pem", "key.pem")
 
 ```go
 router.GET("/", func(c *aqylly.Context) {
-    // Push CSS и JS до отправки HTML
+    // Push CSS and JS before sending HTML
     c.Push("/static/style.css", nil)
     c.Push("/static/app.js", nil)
 
@@ -375,18 +375,18 @@ router.GET("/", func(c *aqylly.Context) {
 })
 ```
 
-#### HTTP/2 Cleartext (h2c) для микросервисов
+#### HTTP/2 Cleartext (h2c) for Microservices
 
-Для внутренних микросервисов можно использовать HTTP/2 без TLS:
+For internal microservices, you can use HTTP/2 without TLS:
 
 ```go
 router := aqylly.Default()
 
-// Запуск HTTP/2 без TLS
+// Run HTTP/2 without TLS
 router.RunH2C(":8080")
 ```
 
-Клиент для h2c:
+Client for h2c:
 
 ```go
 client := &http.Client{
@@ -397,12 +397,12 @@ resp, _ := client.Get("http://localhost:8080")
 fmt.Printf("Protocol: %s\n", resp.Proto) // HTTP/2.0
 ```
 
-### Context API с таймаутами и отменой
+### Context API with Timeouts and Cancellation
 
-Полная поддержка `context.Context` для таймаутов, отмены и передачи данных:
+Full support for `context.Context` for timeouts, cancellation, and value passing:
 
 ```go
-// Таймаут для запроса
+// Request timeout
 router.GET("/slow", func(c *aqylly.Context) {
     cancel, _ := c.WithTimeout(2 * time.Second)
     defer cancel()
@@ -415,7 +415,7 @@ router.GET("/slow", func(c *aqylly.Context) {
     }
 })
 
-// Передача данных через context
+// Pass data through context
 router.Use(func(c *aqylly.Context) {
     c.Set("request_id", generateID())
     c.Next()
@@ -429,7 +429,7 @@ router.GET("/api/data", func(c *aqylly.Context) {
     })
 })
 
-// Доступ к стандартному context.Context
+// Access to standard context.Context
 ctx := c.Context()
 deadline, ok := c.Deadline()
 ```
@@ -439,9 +439,9 @@ deadline, ok := c.Deadline()
 ```go
 router := aqylly.Default()
 
-// Настройка маршрутов...
+// Configure routes...
 
-// Обработка сигналов для graceful shutdown
+// Handle signals for graceful shutdown
 go func() {
     quit := make(chan os.Signal, 1)
     signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
@@ -458,12 +458,12 @@ go func() {
 router.Run(":8080")
 ```
 
-### Кастомные обработчики ошибок
+### Custom Error Handlers
 
 ```go
 router := aqylly.New()
 
-// Кастомный 404
+// Custom 404
 router.NotFound = func(c *aqylly.Context) {
     c.JSON(404, map[string]string{
         "error": "Page not found",
@@ -471,7 +471,7 @@ router.NotFound = func(c *aqylly.Context) {
     })
 }
 
-// Кастомный 405 (Method Not Allowed)
+// Custom 405 (Method Not Allowed)
 router.MethodNotAllowed = func(c *aqylly.Context) {
     c.JSON(405, map[string]string{
         "error":  "Method not allowed",
@@ -480,85 +480,85 @@ router.MethodNotAllowed = func(c *aqylly.Context) {
 }
 ```
 
-## Производительность
+## Performance
 
-Aqylly использует оптимизированное Radix Tree для роутинга, что обеспечивает:
-- O(1) для статических маршрутов
-- O(log n) для динамических параметров
-- Минимальное использование памяти
-- Высокую производительность
+Aqylly uses an optimized Radix Tree for routing, which provides:
+- O(1) for static routes
+- O(log n) for dynamic parameters
+- Minimal memory usage
+- High performance
 
-## Примеры
+## Examples
 
-### Базовый пример
+### Basic Example
 
 ```bash
 cd examples
 go run main.go
 ```
 
-Затем откройте http://localhost:8080 в браузере.
+Then open http://localhost:8080 in your browser.
 
-### HTTP/2 с TLS и Server Push
+### HTTP/2 with TLS and Server Push
 
 ```bash
-# Сначала сгенерируйте сертификаты
+# First, generate certificates
 openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes
 
-# Запустите сервер
+# Run the server
 cd examples
 go run http2_tls.go
 ```
 
-Откройте https://localhost:8443
+Open https://localhost:8443
 
-### HTTP/2 Cleartext (h2c) для микросервисов
+### HTTP/2 Cleartext (h2c) for Microservices
 
-Сервер:
+Server:
 ```bash
 cd examples
 go run http2_h2c.go
 ```
 
-Клиент:
+Client:
 ```bash
 cd examples
 go run http2_h2c_client.go
 ```
 
-Или с curl:
+Or with curl:
 ```bash
 curl --http2-prior-knowledge http://localhost:8080
 ```
 
-## Структура проекта
+## Project Structure
 
 ```
 aqylly/
-├── router.go        # Основной роутер с HTTP/2 поддержкой
-├── context.go       # Context API с context.Context
-├── tree.go          # Radix tree для URL routing
-├── middleware.go    # Встроенные middleware
-├── group.go         # Группировка маршрутов
-├── http2.go         # HTTP/2 конфигурация и h2c
+├── router.go        # Main router with HTTP/2 support
+├── context.go       # Context API with context.Context
+├── tree.go          # Radix tree for URL routing
+├── middleware.go    # Built-in middleware
+├── group.go         # Route grouping
+├── http2.go         # HTTP/2 configuration and h2c
 ├── go.mod
 ├── README.md
 └── examples/
-    ├── main.go           # Базовый пример
-    ├── http2_tls.go      # HTTP/2 с TLS и Server Push
-    ├── http2_h2c.go      # HTTP/2 Cleartext сервер
-    ├── http2_h2c_client.go # HTTP/2 Cleartext клиент
+    ├── main.go           # Basic example
+    ├── http2_tls.go      # HTTP/2 with TLS and Server Push
+    ├── http2_h2c.go      # HTTP/2 Cleartext server
+    ├── http2_h2c_client.go # HTTP/2 Cleartext client
     └── go.mod
 ```
 
-## Лицензия
+## License
 
 MIT
 
-## Вклад
+## Contributing
 
 Contributions are welcome! Feel free to open issues or submit pull requests.
 
-## Авторы
+## Author
 
 Created with ❤️ by Maksat
