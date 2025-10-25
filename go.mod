@@ -1,4 +1,4 @@
-module github.com/makennsky/aqylly
+module github.com/Makennsky/aqylly
 
 go 1.24.0
 

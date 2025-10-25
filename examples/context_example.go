@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/maksat/aqylly"
+	"github.com/Makennsky/aqylly"
 )
 
 func main() {

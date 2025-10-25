@@ -1,5 +1,11 @@
 # Aqylly
 
+[![CI](https://github.com/Makennsky/aqylly/actions/workflows/ci.yml/badge.svg)](https://github.com/Makennsky/aqylly/actions/workflows/ci.yml)
+[![Go Report Card](https://goreportcard.com/badge/github.com/Makennsky/aqylly)](https://goreportcard.com/report/github.com/Makennsky/aqylly)
+[![GoDoc](https://godoc.org/github.com/Makennsky/aqylly?status.svg)](https://godoc.org/github.com/Makennsky/aqylly)
+[![License](https://img.shields.io/github/license/Makennsky/aqylly)](https://github.com/Makennsky/aqylly/blob/master/LICENSE)
+[![Release](https://img.shields.io/github/v/release/Makennsky/aqylly)](https://github.com/Makennsky/aqylly/releases)
+
 Fast and production-ready HTTP router in pure Go with minimal dependencies (only `golang.org/x/net` for HTTP/2).
 
 ## Features
@@ -18,7 +24,7 @@ Fast and production-ready HTTP router in pure Go with minimal dependencies (only
 ## Installation
 
 ```bash
-go get github.com/maksat/aqylly
+go get github.com/Makennsky/aqylly
 ```
 
 ## Quick Start
@@ -28,7 +34,7 @@ package main
 
 import (
     "log"
-    "github.com/maksat/aqylly"
+    "github.com/Makennsky/aqylly"
 )
 
 func main() {
